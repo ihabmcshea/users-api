@@ -47,14 +47,13 @@ let AuthService = class AuthService {
     }
     async register(data) {
         const { email, password, firstName, lastName } = data;
-        const hashedPassword = await this.hashPassword(password);
         try {
             const createdUser = await this.prismaService.user.create({
                 data: {
                     email,
                     firstName,
                     lastName,
-                    password: hashedPassword,
+                    password,
                     role: 'user',
                     verified: false,
                 },
@@ -77,6 +76,12 @@ let AuthService = class AuthService {
     async validateUser(email, password) {
         try {
             const user = await this.prismaService.user.findUnique({ where: { email } });
+            console.log("--login--", email, password);
+            console.log(await this.hashPassword(password));
+            console.log(user);
+            if (user) {
+                console.log(await this.comparePassword(password, user.password));
+            }
             if (user && (await this.comparePassword(password, user.password))) {
                 return user;
             }
@@ -98,6 +103,12 @@ let AuthService = class AuthService {
         return bcrypt.hash(password, saltRounds);
     }
     async comparePassword(password, hash) {
+        const plaintextPassword = '12345678';
+        const hashedPassword = await bcrypt.hash(plaintextPassword, 10);
+        console.log('Plaintext Password:', plaintextPassword);
+        console.log('Hashed Password:', hashedPassword);
+        const isMatch = await bcrypt.compare(plaintextPassword, hashedPassword);
+        console.log('Password Match:', isMatch);
         return bcrypt.compare(password, hash);
     }
     async verifyEmail(token) {

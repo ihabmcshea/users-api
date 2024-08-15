@@ -37,6 +37,7 @@ let EmailService = class EmailService {
                     name,
                     token,
                     email,
+                    apiURL: this.configService.get("API_URL")
                 },
             });
             console.log(`Verification email sent to ${email}`);

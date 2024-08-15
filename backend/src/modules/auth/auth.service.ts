@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service'; // Use PrismaService instead of PrismaClient directly
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -25,8 +25,6 @@ export class AuthService {
     const { email, password, firstName, lastName } = data;
 
     // Hash the user's password
-    const hashedPassword = await this.hashPassword(password);
-
     try {
       // Create the user
       const createdUser = await this.prismaService.user.create({
@@ -34,7 +32,7 @@ export class AuthService {
           email,
           firstName,
           lastName,
-          password: hashedPassword,
+          password,
           role: 'user',
           verified: false,
         },
@@ -68,6 +66,12 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<User | null> {
     try {
       const user = await this.prismaService.user.findUnique({ where: { email } });
+      console.log("--login--", email, password);
+      console.log(await this.hashPassword(password));
+      console.log(user);
+if(user){
+      console.log(await this.comparePassword(password, user.password));
+}
       if (user && (await this.comparePassword(password, user.password))) {
         return user;
       }
@@ -107,6 +111,14 @@ export class AuthService {
    * @returns True if passwords match, otherwise false.
    */
   private async comparePassword(password: string, hash: string): Promise<boolean> {
+    const plaintextPassword = '12345678';
+    const hashedPassword = await bcrypt.hash(plaintextPassword, 10);
+    console.log('Plaintext Password:', plaintextPassword)
+console.log('Hashed Password:', hashedPassword)
+
+const isMatch = await bcrypt.compare(plaintextPassword, hashedPassword)
+console.log('Password Match:', isMatch)
+
     return bcrypt.compare(password, hash);
   }
 

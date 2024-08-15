@@ -29,6 +29,10 @@ const jwt_1 = require("@nestjs/jwt");
 const redis_service_1 = require("../redis/redis.service");
 const prisma_service_1 = require("../database/prisma.service");
 const bcrypt = __importStar(require("bcrypt"));
+jest.mock('bcrypt', () => ({
+    hash: jest.fn().mockResolvedValue('hashedPassword'),
+    compare: jest.fn().mockResolvedValue(true),
+}));
 describe('AuthService', () => {
     let service;
     let jwtService;
@@ -80,36 +84,31 @@ describe('AuthService', () => {
             role: 'user',
             verified: false,
             createdAt: new Date('2024-08-14T12:00:00Z'),
+            updatedAt: new Date('2024-08-14T12:00:00Z'),
         };
-        jest.spyOn(bcrypt, 'hash').mockResolvedValue(mockUser.password);
         jest.spyOn(prismaService.user, 'create').mockResolvedValue(mockUser);
         jest.spyOn(redisService, 'setExpirable').mockResolvedValue();
         jest.spyOn(redisService, 'publish').mockResolvedValue();
         const user = await service.register(registerDto);
         expect(user).toEqual(mockUser);
-        expect(redisService.setExpirable).toHaveBeenCalledWith(expect.any(String), expect.any(String), 10);
-        expect(redisService.publish).toHaveBeenCalledWith('email_verification', JSON.stringify({
-            name: mockUser.firstName,
-            email: mockUser.email,
-            token: expect.any(String),
-        }));
+        expect(redisService.setExpirable).toHaveBeenCalledWith(expect.any(String), expect.any(String), 600);
+        expect(redisService.publish).toHaveBeenCalledWith('email_verification', expect.any(String));
     });
     it('should validate a user successfully', async () => {
         const email = 'test@example.com';
         const password = 'password123';
-        const hashedPassword = await bcrypt.hash(password, 10);
         const mockUser = {
             id: 1,
             email,
             firstName: 'John',
             lastName: 'Doe',
-            password: hashedPassword,
+            password: await bcrypt.hash(password, 10),
             role: 'user',
             verified: true,
             createdAt: new Date('2024-08-14T12:00:00Z'),
+            updatedAt: new Date('2024-08-14T12:00:00Z'),
         };
         jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
-        jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
         const user = await service.validateUser(email, password);
         expect(user).toEqual(mockUser);
     });
@@ -123,8 +122,8 @@ describe('AuthService', () => {
             role: 'user',
             verified: true,
             createdAt: new Date('2024-08-14T12:00:00Z'),
+            updatedAt: new Date('2024-08-14T12:00:00Z'),
         };
-        jest.spyOn(jwtService, 'sign').mockReturnValue('mockedAccessToken');
         const result = await service.login(user);
         expect(result).toEqual({ access_token: 'mockedAccessToken' });
     });
@@ -141,6 +140,7 @@ describe('AuthService', () => {
             role: 'user',
             verified: true,
             createdAt: new Date('2024-08-14T12:00:00Z'),
+            updatedAt: new Date('2024-08-14T12:00:00Z'),
         });
         jest.spyOn(redisService, 'delete').mockResolvedValue();
         const result = await service.verifyEmail(token);

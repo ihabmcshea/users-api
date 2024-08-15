@@ -25,7 +25,7 @@ import { AppController } from './app.controller';
     CacheModule.registerAsync({
       useFactory: () => ({
         store: redisStore,
-        url: process.env.REDIS_URL,  // Ensure you set REDIS_URL in your environment variables
+        url: process.env.REDIS_URL,
       } as RedisClientOptions),
     }),
   ],
@@ -34,7 +34,6 @@ import { AppController } from './app.controller';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    // Apply middleware here if needed
     consumer.apply().forRoutes('*');
   }
 }

@@ -6,7 +6,6 @@ import { PaginatedUserDto } from './dto/paginatedUser.dto';
 import { UpdateUserDto } from './dto/userUpdate.dto';
 import { UserCreateDto } from './dto/userCreate.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { User } from '@prisma/client';
 
 describe('UsersService', () => {
   let service: UsersService;

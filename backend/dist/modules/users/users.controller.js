@@ -33,7 +33,6 @@ let UsersController = class UsersController {
             return new user_dto_1.UserDto(user);
         }
         catch (error) {
-            console.error('Error creating user:', error);
             throw new common_1.HttpException('Unable to create user. Please check the input data and try again.', common_1.HttpStatus.BAD_REQUEST);
         }
     }

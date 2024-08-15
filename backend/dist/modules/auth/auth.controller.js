@@ -19,6 +19,7 @@ const register_dto_1 = require("./dto/register.dto");
 const login_dto_1 = require("./dto/login.dto");
 const user_response_dto_1 = require("./dto/user-response.dto");
 const swagger_1 = require("@nestjs/swagger");
+const email_verified_guard_1 = require("../../common/guards/email-verified.guard");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -55,6 +56,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBody)({ type: login_dto_1.LoginDto }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'User successfully logged in', schema: { example: { access_token: 'jwt-token-here' } } }),
+    (0, common_1.UseGuards)(email_verified_guard_1.EmailVerifiedGuard),
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

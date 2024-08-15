@@ -7,10 +7,13 @@ import { JwtStrategy } from './jwt.strategy';
 import { RedisModule } from '../redis/redis.module';
 import { PrismaService } from '../database/prisma.service'; // Ensure the PrismaService is available
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from '../users/users.module';
+import { UsersService } from '../users/users.service';
 
 @Global()
 @Module({
   imports: [
+    UsersModule,
     ConfigModule.forRoot(), // Load environment variables
     PassportModule.register({ defaultStrategy: 'jwt' }), // Register Passport with JWT as the default strategy
     RedisModule, // Import RedisModule for Redis interactions
@@ -23,7 +26,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, PrismaService], // Provide AuthService and JwtStrategy
+  providers: [AuthService, UsersService, JwtStrategy, PrismaService], // Provide AuthService and JwtStrategy
   controllers: [AuthController], // Register AuthController
   exports: [AuthService], // Export AuthService for use in other modules
 })

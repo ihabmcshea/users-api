@@ -17,6 +17,8 @@ describe('UsersService', () => {
         password: 'hashedPassword',
         role: 'user',
         verified: true,
+        createdAt: new Date('2024-08-14T12:00:00Z'),
+        updatedAt: new Date('2024-08-14T12:00:00Z'),
     };
     const mockPrismaService = {
         user: {
@@ -38,6 +40,9 @@ describe('UsersService', () => {
         service = module.get(users_service_1.UsersService);
         prismaService = module.get(prisma_service_1.PrismaService);
     });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
     it('should be defined', () => {
         expect(service).toBeDefined();
     });
@@ -48,6 +53,8 @@ describe('UsersService', () => {
                 firstName: 'John',
                 lastName: 'Doe',
                 password: 'password',
+                role: 'user',
+                verified: false,
             };
             const result = await service.createUser(createUserDto);
             expect(result).toEqual(new user_dto_1.UserDto(mockUser));
@@ -60,6 +67,8 @@ describe('UsersService', () => {
                 firstName: 'John',
                 lastName: 'Doe',
                 password: 'password',
+                role: 'user',
+                verified: false,
             };
             await expect(service.createUser(createUserDto)).rejects.toThrow(common_1.BadRequestException);
         });
@@ -85,8 +94,11 @@ describe('UsersService', () => {
     describe('updateUser', () => {
         it('should update a user', async () => {
             const updateUserDto = { firstName: 'Jane' };
+            const updatedUser = { ...mockUser, firstName: 'Jane' };
+            jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
+            jest.spyOn(prismaService.user, 'update').mockResolvedValue(updatedUser);
             const result = await service.updateUser(1, updateUserDto);
-            expect(result).toEqual(new user_dto_1.UserDto(mockUser));
+            expect(result).toEqual(new user_dto_1.UserDto(updatedUser));
             expect(prismaService.user.update).toHaveBeenCalledWith({
                 where: { id: 1 },
                 data: { firstName: 'Jane' },
@@ -99,8 +111,11 @@ describe('UsersService', () => {
     });
     describe('deleteUser', () => {
         it('should delete a user', async () => {
+            jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
+            const deletedUser = { ...mockUser, id: 1 };
+            jest.spyOn(prismaService.user, 'delete').mockResolvedValue(deletedUser);
             const result = await service.deleteUser(1);
-            expect(result).toEqual(new user_dto_1.UserDto(mockUser));
+            expect(result).toEqual(new user_dto_1.UserDto(deletedUser));
             expect(prismaService.user.delete).toHaveBeenCalledWith({ where: { id: 1 } });
         });
         it('should throw a NotFoundException if user is not found', async () => {

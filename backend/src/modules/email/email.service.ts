@@ -38,6 +38,7 @@ export class EmailService implements OnModuleInit {
           name,
           token, // Pass token to the template
           email, // Pass email to the template if needed
+          apiURL: this.configService.get<String>("API_URL")
         },
       });
 

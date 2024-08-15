@@ -16,6 +16,8 @@ const jwt_strategy_1 = require("./jwt.strategy");
 const redis_module_1 = require("../redis/redis.module");
 const prisma_service_1 = require("../database/prisma.service");
 const config_1 = require("@nestjs/config");
+const users_module_1 = require("../users/users.module");
+const users_service_1 = require("../users/users.service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -23,6 +25,7 @@ exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
         imports: [
+            users_module_1.UsersModule,
             config_1.ConfigModule.forRoot(),
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
             redis_module_1.RedisModule,
@@ -35,7 +38,7 @@ exports.AuthModule = AuthModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
         ],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, prisma_service_1.PrismaService],
+        providers: [auth_service_1.AuthService, users_service_1.UsersService, jwt_strategy_1.JwtStrategy, prisma_service_1.PrismaService],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService],
     })

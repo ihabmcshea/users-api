@@ -29,7 +29,6 @@ let UsersService = class UsersService {
             return new user_dto_1.UserDto(user);
         }
         catch (error) {
-            console.error('Error creating user:', error);
             throw new common_1.BadRequestException('Unable to create user. Please check the input data and try again.');
         }
     }
