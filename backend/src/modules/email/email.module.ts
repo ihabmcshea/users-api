@@ -39,13 +39,6 @@ import { EmailService } from './email.service';
             logger: true,
             debug: true,
           },
-          template: {
-            dir: join(__dirname, 'src/modules/email/templates/'),
-            adapter: new HandlebarsAdapter(),
-            options: {
-              strict: true,
-            },
-          },
           defaults: {
             from: mailFrom,
           },
