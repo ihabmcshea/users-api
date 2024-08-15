@@ -1,7 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { RedisService } from '../redis/redis.service';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { MailerService } from '@nestjs-modules/mailer';
+
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class EmailService implements OnModuleInit {
@@ -38,11 +39,9 @@ export class EmailService implements OnModuleInit {
           name,
           token, // Pass token to the template
           email, // Pass email to the template if needed
-          apiURL: this.configService.get<String>("API_URL")
+          apiURL: this.configService.get<string>('API_URL'),
         },
       });
-
-      console.log(`Verification email sent to ${email}`);
     } catch (error) {
       // Log error and handle it appropriately
       console.error('Failed to send verification email:', error.message);

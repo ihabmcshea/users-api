@@ -1,11 +1,11 @@
 import { Controller, Post, Body, Get, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { UserResponseDto } from './dto/user-response.dto';
 import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { EmailVerifiedGuard } from 'src/common/guards/email-verified.guard';
 
+import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,12 +16,16 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'User successfully registered', type: UserResponseDto })
   @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<UserResponseDto> {
-    const user : UserResponseDto = await this.authService.register(registerDto);
+    const user: UserResponseDto = await this.authService.register(registerDto);
     return user;
   }
 
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'User successfully logged in', schema: { example: { access_token: 'jwt-token-here' } } })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully logged in',
+    schema: { example: { access_token: 'jwt-token-here' } },
+  })
   @UseGuards(EmailVerifiedGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {

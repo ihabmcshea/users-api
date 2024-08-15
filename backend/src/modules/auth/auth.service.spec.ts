@@ -1,11 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { RedisService } from '../redis/redis.service';
-import { PrismaService } from '../database/prisma.service';
-import { RegisterDto } from './dto/register.dto';
+import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+
+import { PrismaService } from '../database/prisma.service';
+import { RedisService } from '../redis/redis.service';
+
+import { AuthService } from './auth.service';
+import { RegisterDto } from './dto/register.dto';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),

@@ -1,11 +1,13 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service'; // Use PrismaService instead of PrismaClient directly
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { RegisterDto } from './dto/register.dto';
-import { RedisService } from '../redis/redis.service';
-import { v4 as uuidv4 } from 'uuid';
 import { User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
+
+import { PrismaService } from '../database/prisma.service'; // Use PrismaService instead of PrismaClient directly
+import { RedisService } from '../redis/redis.service';
+
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -66,18 +68,11 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<User | null> {
     try {
       const user = await this.prismaService.user.findUnique({ where: { email } });
-      console.log("--login--", email, password);
-      console.log(await this.hashPassword(password));
-      console.log(user);
-if(user){
-      console.log(await this.comparePassword(password, user.password));
-}
       if (user && (await this.comparePassword(password, user.password))) {
         return user;
       }
       return null;
     } catch (error) {
-      console.error('Error validating user:', error);
       throw new BadRequestException('Invalid email or password.');
     }
   }
@@ -111,14 +106,6 @@ if(user){
    * @returns True if passwords match, otherwise false.
    */
   private async comparePassword(password: string, hash: string): Promise<boolean> {
-    const plaintextPassword = '12345678';
-    const hashedPassword = await bcrypt.hash(plaintextPassword, 10);
-    console.log('Plaintext Password:', plaintextPassword)
-console.log('Hashed Password:', hashedPassword)
-
-const isMatch = await bcrypt.compare(plaintextPassword, hashedPassword)
-console.log('Password Match:', isMatch)
-
     return bcrypt.compare(password, hash);
   }
 

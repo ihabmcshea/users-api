@@ -1,16 +1,17 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 
-import { UsersModule } from '../users/users.module';
+import { GLOBAL_CONFIG } from '../../configs/global.config';
 import { AuthModule } from '../auth/auth.module';
 import { DatabaseModule } from '../database/database.module';
 import { EmailModule } from '../email/email.module';
-import { GLOBAL_CONFIG } from '../../configs/global.config';
-import { AppService } from './app.service';
+import { UsersModule } from '../users/users.module';
+
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -23,10 +24,11 @@ import { AppController } from './app.controller';
     EmailModule,
     UsersModule,
     CacheModule.registerAsync({
-      useFactory: () => ({
-        store: redisStore,
-        url: process.env.REDIS_URL,
-      } as RedisClientOptions),
+      useFactory: () =>
+        ({
+          store: redisStore,
+          url: process.env.REDIS_URL,
+        } as RedisClientOptions),
     }),
   ],
   controllers: [AppController],

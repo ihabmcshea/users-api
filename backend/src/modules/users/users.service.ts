@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+
 import { PrismaService } from '../database/prisma.service';
-import { UpdateUserDto } from './dto/userUpdate.dto';
-import { UserDto } from './dto/user.dto';
+
 import { PaginatedUserDto } from './dto/paginatedUser.dto';
+import { UserDto } from './dto/user.dto';
 import { UserCreateDto } from './dto/userCreate.dto';
+import { UpdateUserDto } from './dto/userUpdate.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,11 +19,11 @@ export class UsersService {
    */
   async createUser(data: UserCreateDto): Promise<UserDto> {
     try {
-    const userData = {
-      ...data,
-      verified: data.verified !== undefined ? data.verified : false,
-      role: data.role || 'user',
-    };
+      const userData = {
+        ...data,
+        verified: data.verified !== undefined ? data.verified : false,
+        role: data.role || 'user',
+      };
       const user = await this.prisma.user.create({ data: userData });
       return new UserDto(user);
     } catch (error) {
@@ -49,7 +51,7 @@ export class UsersService {
       ]);
 
       return new PaginatedUserDto(
-        users.map(user => new UserDto(user)),
+        users.map((user) => new UserDto(user)),
         totalCount,
         page,
         limit,
@@ -76,7 +78,6 @@ export class UsersService {
     return new UserDto(user);
   }
 
-
   /**
    * Retrieves a single user by their email address.
    * @param email - The email of the user to retrieve.
@@ -92,7 +93,6 @@ export class UsersService {
 
     return new UserDto(user);
   }
-
 
   /**
    * Updates a user's information.

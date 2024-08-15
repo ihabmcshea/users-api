@@ -1,10 +1,13 @@
-import { Module } from '@nestjs/common';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EmailService } from './email.service';
-import { RedisModule } from '../redis/redis.module';
 import { join } from 'path';
+
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+
+import { RedisModule } from '../redis/redis.module';
+
+import { EmailService } from './email.service';
 
 @Module({
   imports: [
@@ -37,8 +40,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
             debug: true,
           },
           template: {
-            dir: join(process.cwd(), 'src/modules/email/templates/'),
-            adapter: new HandlebarsAdapter(), 
+            dir: join(__dirname, 'src/modules/email/templates/'),
+            adapter: new HandlebarsAdapter(),
             options: {
               strict: true,
             },

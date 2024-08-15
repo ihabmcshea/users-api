@@ -1,19 +1,19 @@
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import cors from 'cors';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 
-import { AppModule } from './modules/app/app.module';
-import { API_PREFIX } from './shared/constants/global.constants';
 import { SwaggerConfig } from './configs/config.interface';
 import { GLOBAL_CONFIG } from './configs/global.config';
+import { AppModule } from './modules/app/app.module';
 import { PrismaClientExceptionFilter } from './modules/filter/prismaclientexceptionfilter/prismaClientException.filter';
+import { API_PREFIX } from './shared/constants/global.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'],  // Log errors and warnings
+    logger: ['error', 'warn'], // Log errors and warnings
   });
 
   // Set global prefix for all routes
@@ -25,9 +25,9 @@ async function bootstrap() {
   // Configure CORS
   app.use(
     cors({
-      origin: process.env.FRONTEND_URL,  // Frontend URL allowed for CORS
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],  // Allowed methods
-      credentials: true,  // Allow credentials (cookies) to be included in CORS requests
+      origin: process.env.FRONTEND_URL, // Frontend URL allowed for CORS
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // Allowed methods
+      credentials: true, // Allow credentials (cookies) to be included in CORS requests
     }),
   );
 
@@ -35,11 +35,13 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Apply global validation pipe
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,  // Strip properties that do not have decorators
-    forbidNonWhitelisted: true,  // Throw an error if non-whitelisted properties are present
-    transform: true,  // Automatically transform payloads to DTOs
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Strip properties that do not have decorators
+      forbidNonWhitelisted: true, // Throw an error if non-whitelisted properties are present
+      transform: true, // Automatically transform payloads to DTOs
+    }),
+  );
 
   // Swagger setup
   const configService = app.get<ConfigService>(ConfigService);

@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+
 import { AuthHelpers } from '../../shared/helpers/auth.helpers'; // Adjust the import path as needed
 
 @Injectable()
 export class UserListener {
- static async onCreated(params: Prisma.MiddlewareParams, next: (params: Prisma.MiddlewareParams) => Promise<any>): Promise<any> {
+  static async onCreated(
+    params: Prisma.MiddlewareParams,
+    next: (params: Prisma.MiddlewareParams) => Promise<any>,
+  ): Promise<any> {
     // Check if the model is 'User'
     if (params.model === 'User') {
       const password = params.args?.data?.password;

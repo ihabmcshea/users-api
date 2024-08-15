@@ -2,30 +2,25 @@
 FROM node:18
 
 # Set working directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn
+COPY package.json tsconfig.json .
+RUN yarn 
 
-# Install nest for development
+# Install nest CLI globally
 RUN yarn global add @nestjs/cli
+
+# Copy all application files
+COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Install development dependencies for linting and formatting
-RUN yarn add --dev eslint prettier
-
-# Copy application files
-COPY . .
-
-# Run linting and formatting checks
-RUN yarn lint
-RUN yarn prettier --check .
-
-# Expose the application port
+# Expose the port your app runs on
 EXPOSE 4000
 
-# Start the application in watch mode for development
-CMD ["nest", "start", "--watch"]
+RUN chmod 644 tsconfig.json
+
+# Start the application in development mode with live reloading
+CMD ["yarn", "run", "start:dev"]

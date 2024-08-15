@@ -1,11 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '../database/prisma.service';
-import { UsersService } from './users.service';
-import { UserDto } from './dto/user.dto';
-import { PaginatedUserDto } from './dto/paginatedUser.dto';
-import { UpdateUserDto } from './dto/userUpdate.dto';
-import { UserCreateDto } from './dto/userCreate.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { PrismaService } from '../database/prisma.service';
+
+import { PaginatedUserDto } from './dto/paginatedUser.dto';
+import { UserDto } from './dto/user.dto';
+import { UserCreateDto } from './dto/userCreate.dto';
+import { UpdateUserDto } from './dto/userUpdate.dto';
+import { UsersService } from './users.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -38,10 +40,7 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        { provide: PrismaService, useValue: mockPrismaService },
-      ],
+      providers: [UsersService, { provide: PrismaService, useValue: mockPrismaService }],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
@@ -91,12 +90,7 @@ describe('UsersService', () => {
   describe('findAll', () => {
     it('should return a paginated list of users', async () => {
       const result = await service.findAll(1, 10);
-      expect(result).toEqual(new PaginatedUserDto(
-        [new UserDto(mockUser)],
-        1,
-        1,
-        10,
-      ));
+      expect(result).toEqual(new PaginatedUserDto([new UserDto(mockUser)], 1, 1, 10));
       expect(prismaService.user.findMany).toHaveBeenCalledWith({ skip: 0, take: 10 });
     });
   });

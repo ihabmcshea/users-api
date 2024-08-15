@@ -1,13 +1,11 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+
 import { UsersService } from '../../modules/users/users.service';
 
 @Injectable()
 export class EmailVerifiedGuard implements CanActivate {
-  constructor(
-    private reflector: Reflector,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private reflector: Reflector, private readonly usersService: UsersService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

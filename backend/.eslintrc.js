@@ -18,6 +18,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 0,
     '@typescript-eslint/ban-ts-comment': 0,
     '@typescript-eslint/no-empty-function': 0,
+    'no-array-reduce/no-reduce': 'off',
 
     // Import
     'import/order': [
@@ -41,7 +42,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        extensions: ['.ts', '.tsx'],
         moduleDirectory: ['node_modules', 'src/'],
       },
     },

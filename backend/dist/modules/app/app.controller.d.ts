@@ -1,2 +1,1 @@
-export declare class AppController {
-}
+export declare class AppController {}

@@ -1,20 +1,22 @@
 import { Module, Global } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
-import { RedisModule } from '../redis/redis.module';
-import { PrismaService } from '../database/prisma.service'; // Ensure the PrismaService is available
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
+import { PrismaService } from '../database/prisma.service'; // Ensure the PrismaService is available
+import { RedisModule } from '../redis/redis.module';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
+
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Global()
 @Module({
   imports: [
     UsersModule,
-    ConfigModule.forRoot(), // Load environment variables
+    ConfigModule.forRoot(), // Load environment variablesgit remote add origin git@github.com:ihabmcshea/users-api.git
     PassportModule.register({ defaultStrategy: 'jwt' }), // Register Passport with JWT as the default strategy
     RedisModule, // Import RedisModule for Redis interactions
     JwtModule.registerAsync({
