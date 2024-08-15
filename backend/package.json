@@ -4,6 +4,7 @@
   "main": "src/main.ts",
   "license": "MIT",
   "scripts": {
+    "build": "nest build",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint --max-warnings 0 . && npm run tsc",
