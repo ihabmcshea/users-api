@@ -63,6 +63,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "resolutions": {
-    "string-width": "4.2.3"
+    "string-width": "4.2.3",
+    "wrap-ansi": "7.0.0"
   }
 }

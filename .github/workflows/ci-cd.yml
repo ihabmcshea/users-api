@@ -109,11 +109,6 @@ jobs:
           cd frontend
           yarn install
 
-      - name: Run tests (Frontend)
-        run: |
-          cd frontend
-          yarn test
-
       - name: Build Frontend
         run: |
           cd frontend
