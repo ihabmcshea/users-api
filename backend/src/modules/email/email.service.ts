@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
-
+import path from 'path';
 import { RedisService } from '../redis/redis.service';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class EmailService implements OnModuleInit {
       await this.mailerService.sendMail({
         to: email,
         subject: 'Email Verification',
-        template: './verification', // Path to the email template
+        template: path.join(__dirname, './verification'), // Path to the email template
         context: {
           name,
           token, // Pass token to the template

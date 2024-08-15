@@ -8,11 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const mailer_1 = require("@nestjs-modules/mailer");
+const path_1 = __importDefault(require("path"));
 const redis_service_1 = require("../redis/redis.service");
 let EmailService = class EmailService {
     constructor(redisService, mailerService, configService) {
@@ -32,7 +36,7 @@ let EmailService = class EmailService {
             await this.mailerService.sendMail({
                 to: email,
                 subject: 'Email Verification',
-                template: './verification',
+                template: path_1.default.join(__dirname, './verification'),
                 context: {
                     name,
                     token,
