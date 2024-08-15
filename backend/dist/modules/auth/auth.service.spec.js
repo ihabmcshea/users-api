@@ -125,7 +125,7 @@ describe('AuthService', () => {
             updatedAt: new Date('2024-08-14T12:00:00Z'),
         };
         const result = await service.login(user);
-        expect(result).toEqual({ access_token: 'mockedAccessToken' });
+        expect(result).toEqual({ access_token: 'mockedAccessToken', user });
     });
     it('should verify email successfully', async () => {
         const token = 'verificationToken';

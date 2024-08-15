@@ -125,7 +125,7 @@ describe('AuthService', () => {
 
     const result = await service.login(user);
 
-    expect(result).toEqual({ access_token: 'mockedAccessToken' });
+    expect(result).toEqual({ access_token: 'mockedAccessToken', user });
   });
 
   it('should verify email successfully', async () => {

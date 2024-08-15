@@ -106,7 +106,7 @@ const LoginModal: React.FC = () => {
                         </Button>
                     </ModalFooter>
                     <Text textAlign="center" my={4}>
-                        Don't have an account?{' '}
+                        Need an account?{' '}
                         <Link href="/register" color="teal.500">
                             Register
                         </Link>
