@@ -1,0 +1,13 @@
+{
+  "name": "ticketSouq",
+  "version": "1.0.0",
+  "scripts": {
+    "docker:dev": "docker-compose --file docker-compose.yml --compatibility up --build"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@nestjs/swagger": "^7.4.0",
+    "rxjs": "^7.8.1"
+  }
+}
