@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UnauthorizedException, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { EmailVerifiedGuard } from 'src/common/guards/email-verified.guard';
 
@@ -30,7 +30,6 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-    // console.log('user', user);
     if (user) {
       return this.authService.login(user);
     }
@@ -46,13 +45,25 @@ export class AuthController {
     throw new UnauthorizedException('Email verification failed');
   }
 
-  // @UseGuard()
-  // @Get('my-profile')
-  // async verifyEmail(@Query('token') token: string): Promise<string> {
-  //   const isVerified = await this.authService.verifyEmail(token);
-  //   if (isVerified) {
-  //     return 'Email successfully verified';
-  //   }
-  //   throw new UnauthorizedException('Email verification failed');
-  // }
+  @Get('check-auth')
+  checkAuth(@Req() req) {
+    // refreshRequired
+    const token = req.headers.authorization?.split(' ')[1];
+
+    return {
+      status: 'success',
+      message: 'User is authenticated',
+      refreshRequired: false,
+      user: req.user, // You can return the user info if needed
+    };
+  }
+
+  @Get('refresh-token')
+  async refreshToken(@Req() req) {
+    const user = req.user;
+    if (!user) {
+      throw new UnauthorizedException('User is not logged in');
+    }
+    return this.authService.login(user);
+  }
 }

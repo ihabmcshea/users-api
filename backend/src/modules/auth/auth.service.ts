@@ -8,6 +8,7 @@ import { PrismaService } from '../database/prisma.service'; // Use PrismaService
 import { RedisService } from '../redis/redis.service';
 
 import { RegisterDto } from './dto/register.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -82,10 +83,11 @@ export class AuthService {
    * @param user - The user to log in.
    * @returns An object containing the access token.
    */
-  async login(user: User): Promise<{ access_token: string }> {
+  async login(user: User): Promise<{ access_token: string; user: UserResponseDto }> {
     const payload = { username: user.email, sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
+      user,
     };
   }
 
@@ -133,6 +135,26 @@ export class AuthService {
     } catch (error) {
       console.error('Error verifying email:', error);
       throw new UnauthorizedException('Invalid verification token.');
+    }
+  }
+
+  async refreshToken(token: string) {
+    if (!token) {
+      return {
+        status: 'error',
+        message: 'Token not provided',
+      };
+    }
+
+    const decodedToken = this.jwtService.decode(token) as any;
+    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+    const currentTime = Date.now();
+    const timeLeft = expirationTime - currentTime;
+    const timeThreshold = 60 * 60 * 1000; // 60 minutes threshold
+    if (timeLeft < timeThreshold) {
+      return {
+        refreshRequired: true,
+      };
     }
   }
 }
