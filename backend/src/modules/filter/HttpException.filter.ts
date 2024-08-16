@@ -14,8 +14,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     console.log(exceptionResponse.message);
     const errorResponse = Array.isArray(exceptionResponse.message)
       ? exceptionResponse.message.reduce((acc, message) => {
-          const key = message.split('').toLowerCase(); // Create a simple key from the error message
-          acc[key] = message;
+          if (message) {
+            const key = message.split('')[0].toLowerCase(); // Create a simple key from the error message
+            acc[key] = message;
+          }
           return acc;
         }, {} as Record<string, string>)
       : isObject(exceptionResponse.message)

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Box, Heading, Spinner, Stack, Button } from '@chakra-ui/react';
+import React from 'react';
+import { Box, Heading, Spinner, Stack, Button, Text } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
 import UserList from './UserList';
 import Link from 'next/link';
@@ -9,36 +9,49 @@ import Link from 'next/link';
 const MainPage: React.FC = () => {
     const { user, isAuthenticated, isLoading } = useAuth();
 
-
+    // Show loading spinner while auth status is being determined
     if (isLoading) {
-        return <Spinner />;
-    }
-
-    if (!isAuthenticated) {
         return (
-            <Box textAlign="center" mt={10}>
-                <Heading as="h2" mb={4}>Please log in</Heading>
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Spinner size="lg" />
             </Box>
         );
     }
 
+    // Show login prompt if user is not authenticated
+    if (!isAuthenticated) {
+        return (
+            <Box textAlign="center" mt={10}>
+                <Heading as="h2" mb={4}>Please log in</Heading>
+                <Link href="/login" passHref>
+                    <Button colorScheme="teal" size="lg">Login</Button>
+                </Link>
+            </Box>
+        );
+    }
+
+    // Render content based on user role
     return (
-        <Box p={5}>
-            {user && user.role === 'user' ? (
-                <Box>
-                    <Heading as="h2" mb={4}>Your Profile</Heading>
-                    <Box>
-                        <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-                        <p><strong>Email:</strong> {user.email}</p>
-                        <Button mt={4} colorScheme="teal">Update Profile</Button>
-                        <Button mt={4} ml={4} colorScheme="red">Delete Profile</Button>
-                    </Box>
+        <Box p={5} maxW="container.lg" mx="auto">
+            {user.role === 'user' ? (
+                <Box p={5} borderWidth={1} borderRadius="lg" boxShadow="md">
+                    <Heading as="h2" mb={4} size="lg">Your Profile</Heading>
+                    <Stack spacing={4}>
+                        <Text><strong>Name:</strong> {user.firstName} {user.lastName}</Text>
+                        <Text><strong>Email:</strong> {user.email}</Text>
+                        <Stack direction={{ base: 'column', sm: 'row' }} spacing={4}>
+                            <Link href="/profile" passHref>
+                                <Button colorScheme="teal" width="full" size="md">Update Profile</Button>
+                            </Link>
+                            <Button colorScheme="red" width="full" size="md">Delete Profile</Button>
+                        </Stack>
+                    </Stack>
                 </Box>
-            ) : user && user.role === 'admin' ? (
-                <Box>
-                    <Heading as="h2" mb={4}>All Users</Heading>
+            ) : user.role === 'admin' ? (
+                <Box p={5} borderWidth={1} borderRadius="lg" boxShadow="md">
+                    <Heading as="h2" mb={4} size="lg">All Users</Heading>
                     <Link href="/createUser" passHref>
-                        <Button mb={4} colorScheme="teal">Create User</Button>
+                        <Button colorScheme="teal" mb={4} size="md">Create User</Button>
                     </Link>
                     <UserList />
                 </Box>

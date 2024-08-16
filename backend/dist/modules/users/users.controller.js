@@ -92,6 +92,7 @@ let UsersController = class UsersController {
         }
     }
     async updateUser(id, data) {
+        console.log('data', data);
         try {
             const user = await this.usersService.updateUser(id, data);
             if (!user) {
@@ -167,6 +168,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findAll", null);
 __decorate([
+    (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'User details', type: user_dto_1.UserDto }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'User not found' }),

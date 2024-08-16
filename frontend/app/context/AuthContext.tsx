@@ -112,8 +112,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       localStorage.setItem("user", JSON.stringify(user));
       router.push("/");
     } catch (error) {
-      console.error("Login failed", error);
-      throw new Error("Login failed");
+      if (error.response?.data?.email) {
+        throw new Error(error.response.data.email);
+      } else {
+        throw new Error("There was a problem logging you in.");
+      }
     }
   };
 

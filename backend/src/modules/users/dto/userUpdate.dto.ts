@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEmail, MinLength } from 'class-validator';
+import { IsOptional, IsString, IsEmail, MinLength, IsBoolean, Matches } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -14,7 +14,10 @@ export class UpdateUserDto {
   lastName?: string;
 
   @IsOptional()
-  @MinLength(8)
+  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+    message:
+      'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
+  })
   password?: string;
 
   @IsOptional()
@@ -22,6 +25,6 @@ export class UpdateUserDto {
   role?: string;
 
   @IsOptional()
-  @IsString()
+  @IsBoolean()
   verified?: boolean;
 }

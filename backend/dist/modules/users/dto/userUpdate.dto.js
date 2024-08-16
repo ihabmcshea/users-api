@@ -31,7 +31,9 @@ __decorate([
 ], UpdateUserDto.prototype, "lastName", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.MinLength)(8),
+    (0, class_validator_1.Matches)(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+        message: 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
+    }),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "password", void 0);
 __decorate([
@@ -41,7 +43,7 @@ __decorate([
 ], UpdateUserDto.prototype, "role", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], UpdateUserDto.prototype, "verified", void 0);
 //# sourceMappingURL=userUpdate.dto.js.map

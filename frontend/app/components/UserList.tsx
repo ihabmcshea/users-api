@@ -1,40 +1,38 @@
+'use client';
+
 import React, { useState } from 'react';
 import useSWR from 'swr';
-import { Box, Table, Tbody, Td, Th, Thead, Tr, IconButton, Spinner, Flex, Button } from '@chakra-ui/react';
+import { Box, Table, Tbody, Td, Th, Thead, Tr, IconButton, Spinner, Flex, Button, useBreakpointValue } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 import { IUser } from 'app/interfaces/IUser';
-import { useAuth } from 'app/context/AuthContext';
-import { PagintedUsers } from 'app/interfaces/IPaginatedUsers';
+import { PaginatedUsers } from 'app/interfaces/IPaginatedUsers';
 import User from './User';
+import { useAuth } from 'app/context/AuthContext';
 
-
-const fetcher = (url: string, token: string | undefined) => axios.get(url, {
-    headers: {
-        Authorization: `Bearer ${token}`,
-    },
-}).then((res) => res.data);
-
-
-
+// Define a fetcher function
+const fetcher = (url: string, token: string | undefined) =>
+    axios.get(url, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    }).then((res) => res.data);
 
 const UserList: React.FC = () => {
     const { token } = useAuth();
     const [page, setPage] = useState(1);
 
-    const { data, error } = useSWR<PagintedUsers>(
+    const { data, error } = useSWR<PaginatedUsers>(
         [`/next-api/users?page=${page}`, token],
         ([url, token]) => fetcher(url, token)
     );
 
-
     if (error) return <Box>Error loading users</Box>;
-    if (!data) return <div><Spinner /></div>;
+    if (!data) return <Flex justify="center" align="center" height="100vh"><Spinner size="lg" /></Flex>;
 
     const { data: users, meta } = data;
 
     const handleNextPage = () => {
-        console.log(page, meta.totalPages);
         if (page < meta.totalPages) setPage((prev) => prev + 1);
     };
 
@@ -43,14 +41,15 @@ const UserList: React.FC = () => {
     };
 
     return (
-        <Flex direction="column" p={8} width="100%">
-            <Box flex="1" overflowX="auto">
+        <Flex direction="column" p={4} width="100%">
+            <Box overflowX="auto">
                 <Table variant="simple" width="100%">
                     <Thead>
                         <Tr>
                             <Th>First Name</Th>
                             <Th>Last Name</Th>
                             <Th>Email</Th>
+                            <Th>User Role</Th>
                             <Th>Registration Date</Th>
                             <Th>Actions</Th>
                         </Tr>
@@ -58,8 +57,7 @@ const UserList: React.FC = () => {
                     <Tbody>
                         {users.map((user: IUser) => (
                             <User key={user.id} user={user} page={page} />
-                        ))
-                        }
+                        ))}
                     </Tbody>
                 </Table>
             </Box>
@@ -81,6 +79,5 @@ const UserList: React.FC = () => {
         </Flex>
     );
 };
-
 
 export default UserList;

@@ -56,7 +56,7 @@ const LoginModal: React.FC = () => {
                 setError('Incorrect email or password');
                 toast({
                     title: 'Login failed',
-                    description: 'Please check your login details and try again.',
+                    description: err.message,
                     status: 'error',
                     duration: 5000,
                     isClosable: true,

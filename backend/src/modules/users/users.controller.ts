@@ -116,6 +116,7 @@ export class UsersController {
     }
   }
 
+  @Roles('admin')
   @Get(':id')
   @ApiResponse({ status: 200, description: 'User details', type: UserDto })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -142,6 +143,7 @@ export class UsersController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async updateUser(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateUserDto): Promise<UserDto> {
+    console.log('data', data);
     try {
       const user = await this.usersService.updateUser(id, data);
       if (!user) {

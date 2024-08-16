@@ -126,6 +126,7 @@ export class UsersService {
    * @throws BadRequestException if the user cannot be updated.
    */
   async updateUser(id: number, data: UpdateUserDto): Promise<UserDto> {
+    // console.log('data', data);
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
