@@ -2,6 +2,7 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { PrismaService } from '../database/prisma.service';
+import { RedisService } from '../redis/redis.service';
 
 import { PaginatedUserDto } from './dto/paginatedUser.dto';
 import { UserDto } from './dto/user.dto';
@@ -26,6 +27,13 @@ describe('UsersService', () => {
     updatedAt: new Date('2024-08-14T12:00:00Z'),
   };
 
+  const mockRedisService = {
+    setExpirable: jest.fn(),
+    publish: jest.fn(),
+    get: jest.fn(),
+    delete: jest.fn(),
+  };
+
   // Mock PrismaService methods
   const mockPrismaService = {
     user: {
@@ -40,7 +48,11 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService, { provide: PrismaService, useValue: mockPrismaService }],
+      providers: [
+        UsersService,
+        { provide: PrismaService, useValue: mockPrismaService },
+        { provide: RedisService, useValue: mockRedisService },
+      ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);

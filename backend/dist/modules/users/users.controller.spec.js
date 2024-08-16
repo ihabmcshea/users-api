@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const testing_1 = require("@nestjs/testing");
 const prisma_service_1 = require("../database/prisma.service");
+const redis_service_1 = require("../redis/redis.service");
 const paginatedUser_dto_1 = require("./dto/paginatedUser.dto");
 const user_dto_1 = require("./dto/user.dto");
 const users_service_1 = require("./users.service");
@@ -20,6 +21,12 @@ describe('UsersService', () => {
         createdAt: new Date('2024-08-14T12:00:00Z'),
         updatedAt: new Date('2024-08-14T12:00:00Z'),
     };
+    const mockRedisService = {
+        setExpirable: jest.fn(),
+        publish: jest.fn(),
+        get: jest.fn(),
+        delete: jest.fn(),
+    };
     const mockPrismaService = {
         user: {
             create: jest.fn().mockResolvedValue(mockUser),
@@ -32,7 +39,11 @@ describe('UsersService', () => {
     };
     beforeEach(async () => {
         const module = await testing_1.Test.createTestingModule({
-            providers: [users_service_1.UsersService, { provide: prisma_service_1.PrismaService, useValue: mockPrismaService }],
+            providers: [
+                users_service_1.UsersService,
+                { provide: prisma_service_1.PrismaService, useValue: mockPrismaService },
+                { provide: redis_service_1.RedisService, useValue: mockRedisService },
+            ],
         }).compile();
         service = module.get(users_service_1.UsersService);
         prismaService = module.get(prisma_service_1.PrismaService);
