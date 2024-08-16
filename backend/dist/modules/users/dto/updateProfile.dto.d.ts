@@ -1,5 +1,5 @@
 export declare class UpdateProfileDto {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
 }

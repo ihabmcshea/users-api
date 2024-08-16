@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react';
-import MainPage from './components/main';
+import MainPage from './components/Main';
 
 export default function Home() {
   return (

@@ -87,6 +87,10 @@ export class UsersController {
       const user = await this.usersService.createUser(data);
       return new UserDto(user);
     } catch (error) {
+      console.log('error', JSON.stringify(error.response.message));
+      if (error.response) {
+        throw new HttpException({ message: error.response.message }, HttpStatus.BAD_REQUEST);
+      }
       throw new HttpException(
         'Unable to create user. Please check the input data and try again.',
         HttpStatus.BAD_REQUEST,
@@ -154,12 +158,14 @@ export class UsersController {
   }
 
   @Roles('admin')
-  @Delete('user/:id')
+  @Delete(':id')
   @ApiResponse({ status: 200, description: 'User deleted successfully', type: UserDto })
   @ApiResponse({ status: 404, description: 'User not found' })
   async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<UserDto> {
+    console.log('id', id);
     try {
       const user = await this.usersService.deleteUser(id);
+      console.log(user);
       if (!user) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }

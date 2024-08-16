@@ -1,1 +1,2 @@
-export declare class AppService {}
+export declare class AppService {
+}

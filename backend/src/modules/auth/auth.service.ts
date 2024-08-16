@@ -138,7 +138,7 @@ export class AuthService {
     }
   }
 
-  async refreshToken(token: string) {
+  async checkAuth(token: string) {
     if (!token) {
       return {
         status: 'error',
@@ -146,15 +146,16 @@ export class AuthService {
       };
     }
 
-    const decodedToken = this.jwtService.decode(token) as any;
-    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
-    const currentTime = Date.now();
-    const timeLeft = expirationTime - currentTime;
-    const timeThreshold = 60 * 60 * 1000; // 60 minutes threshold
-    if (timeLeft < timeThreshold) {
-      return {
-        refreshRequired: true,
-      };
-    }
+    const decodedToken = (await this.jwtService.decode(token)) as any;
+    console.log(decodedToken);
+    // const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+    // const currentTime = Date.now();
+    // const timeLeft = expirationTime - currentTime;
+    // const timeThreshold = 60 * 60 * 1000; // 60 minutes threshold
+    // if (timeLeft < timeThreshold) {
+    //   return {
+    //     refreshRequired: true,
+    //   };
+    // }
   }
 }

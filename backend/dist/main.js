@@ -11,6 +11,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const global_config_1 = require("./configs/global.config");
 const app_module_1 = require("./modules/app/app.module");
+const HttpException_filter_1 = require("./modules/filter/HttpException.filter");
 const prismaClientException_filter_1 = require("./modules/filter/prismaclientexceptionfilter/prismaClientException.filter");
 const global_constants_1 = require("./shared/constants/global.constants");
 async function bootstrap() {
@@ -19,6 +20,7 @@ async function bootstrap() {
     });
     app.setGlobalPrefix(global_constants_1.API_PREFIX);
     app.useGlobalFilters(new prismaClientException_filter_1.PrismaClientExceptionFilter());
+    app.useGlobalFilters(new HttpException_filter_1.HttpExceptionFilter());
     app.use((0, cors_1.default)({
         origin: process.env.FRONTEND_URL,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

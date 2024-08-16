@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
 import { PrismaService } from '../database/prisma.service';
+import { RedisService } from '../redis/redis.service';
 
 import { PaginatedUserDto } from './dto/paginatedUser.dto';
 import { UserDto } from './dto/user.dto';
@@ -9,7 +11,7 @@ import { UpdateUserDto } from './dto/userUpdate.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly redisService: RedisService, private readonly prisma: PrismaService) {}
 
   /**
    * Creates a new user with the provided data.
@@ -19,15 +21,36 @@ export class UsersService {
    */
   async createUser(data: UserCreateDto): Promise<UserDto> {
     try {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: data.email },
+      });
+      console.log('existingUser', existingUser);
+      if (existingUser) {
+        throw new BadRequestException({
+          email: 'This email is already registered.',
+        });
+      }
+
       const userData = {
         ...data,
         verified: data.verified !== undefined ? data.verified : false,
         role: data.role || 'user',
       };
       const user = await this.prisma.user.create({ data: userData });
+      const verificationToken = uuidv4();
+      await this.redisService.setExpirable(verificationToken, user.id.toString(), 600); // 10 minutes expiration
+
+      // Publish the verification token to a Redis channel
+      const message = JSON.stringify({
+        name: user.firstName,
+        email: user.email,
+        token: verificationToken,
+      });
+      await this.redisService.publish('email_verification', message);
+
       return new UserDto(user);
     } catch (error) {
-      throw new BadRequestException('Unable to create user. Please check the input data and try again.');
+      throw new BadRequestException({ message: 'email: This email is already registered' });
     }
   }
 
@@ -88,7 +111,7 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new NotFoundException(`Email ${email} not found`);
     }
 
     return new UserDto(user);

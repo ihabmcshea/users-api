@@ -44,6 +44,7 @@ let AuthController = class AuthController {
     }
     checkAuth(req) {
         const token = req.headers.authorization?.split(' ')[1];
+        this.authService.checkAuth(token);
         return {
             status: 'success',
             message: 'User is authenticated',

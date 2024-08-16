@@ -32,10 +32,10 @@ const Header: React.FC = () => {
 
     const isMobile = useBreakpointValue({ base: true, md: false });
 
+
     useEffect(() => {
         console.log(user);
     }, [user])
-
     return (
         <Box
             as="header"
@@ -68,7 +68,7 @@ const Header: React.FC = () => {
                                         <Spinner />
                                     ) : user ? (
                                         <Stack spacing={4}>
-                                            <UserMenu />
+                                            <UserMenu isMobile={isMobile} />
                                         </Stack>
                                     ) : (
                                         <LoginModal />
@@ -83,6 +83,7 @@ const Header: React.FC = () => {
                             <Spinner />
                         ) : user ? (
                             <>
+                                <UserMenu />
                             </>
                         ) : (
                             <LoginModal />

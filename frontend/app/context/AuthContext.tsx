@@ -9,14 +9,7 @@ import React, {
 } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-
-export interface IUser {
-  id: number;
-  firstName: string;
-  lastName: string;
-  role: string;
-  email: string;
-}
+import { IUser } from "app/interfaces/IUser";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -42,8 +35,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Check authentication status on initial load
   useEffect(() => {
     const initAuth = () => {
-      const storedToken = localStorage.getItem("token");
+      const storedToken = localStorage.getItem("token")?.trim();
       const storedUser = localStorage.getItem("user");
+      console.log(`Authorization: Bearer ${storedToken}`);
 
       if (storedToken && storedUser) {
         setIsAuthenticated(true);
@@ -109,11 +103,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/v1/auth/login`,
         { email, password }
       );
-      const { token, user } = response.data;
+      const { access_token, user } = response.data;
 
       setIsAuthenticated(true);
+      setToken(access_token);
       setUser(user);
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
       router.push("/");
     } catch (error) {

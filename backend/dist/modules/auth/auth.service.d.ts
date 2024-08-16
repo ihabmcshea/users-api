@@ -18,13 +18,8 @@ export declare class AuthService {
     private hashPassword;
     private comparePassword;
     verifyEmail(token: string): Promise<boolean>;
-    refreshToken(token: string): Promise<{
+    checkAuth(token: string): Promise<{
         status: string;
         message: string;
-        refreshRequired?: undefined;
-    } | {
-        refreshRequired: boolean;
-        status?: undefined;
-        message?: undefined;
     } | undefined>;
 }

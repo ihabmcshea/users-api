@@ -1,55 +1,53 @@
-'use strict';
-var __decorate =
-  (this && this.__decorate) ||
-  function (decorators, target, key, desc) {
-    var c = arguments.length,
-      r = c < 3 ? target : desc === null ? (desc = Object.getOwnPropertyDescriptor(target, key)) : desc,
-      d;
-    if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if ((d = decorators[i])) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-var __metadata =
-  (this && this.__metadata) ||
-  function (k, v) {
-    if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function') return Reflect.metadata(k, v);
-  };
-Object.defineProperty(exports, '__esModule', { value: true });
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserCreateDto = void 0;
-const swagger_1 = require('@nestjs/swagger');
-const class_validator_1 = require('class-validator');
-const register_dto_1 = require('../../auth/dto/register.dto');
-class UserCreateDto extends register_dto_1.RegisterDto {}
+const class_validator_1 = require("class-validator");
+class UserCreateDto {
+    constructor() {
+        this.verified = false;
+    }
+}
 exports.UserCreateDto = UserCreateDto;
-__decorate(
-  [
-    (0, class_validator_1.IsOptional)(),
-    (0, swagger_1.ApiProperty)({
-      description: 'Indicates whether the user’s email is verified',
-      default: false,
-      example: true,
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], UserCreateDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+        message: 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
     }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata('design:type', Boolean),
-  ],
-  UserCreateDto.prototype,
-  'verified',
-  void 0,
-);
-__decorate(
-  [
-    (0, swagger_1.ApiProperty)({
-      description: 'The role of the user',
-      default: 'user',
-      example: 'admin',
-    }),
-    __metadata('design:type', String),
-  ],
-  UserCreateDto.prototype,
-  'role',
-  void 0,
-);
+    __metadata("design:type", String)
+], UserCreateDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserCreateDto.prototype, "firstName", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserCreateDto.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsIn)(['user', 'admin']),
+    __metadata("design:type", String)
+], UserCreateDto.prototype, "role", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], UserCreateDto.prototype, "verified", void 0);
 //# sourceMappingURL=userCreate.dto.js.map

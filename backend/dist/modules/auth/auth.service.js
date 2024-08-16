@@ -117,23 +117,15 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid verification token.');
         }
     }
-    async refreshToken(token) {
+    async checkAuth(token) {
         if (!token) {
             return {
                 status: 'error',
                 message: 'Token not provided',
             };
         }
-        const decodedToken = this.jwtService.decode(token);
-        const expirationTime = decodedToken.exp * 1000;
-        const currentTime = Date.now();
-        const timeLeft = expirationTime - currentTime;
-        const timeThreshold = 60 * 60 * 1000;
-        if (timeLeft < timeThreshold) {
-            return {
-                refreshRequired: true,
-            };
-        }
+        const decodedToken = (await this.jwtService.decode(token));
+        console.log(decodedToken);
     }
 };
 exports.AuthService = AuthService;

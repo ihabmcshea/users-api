@@ -3,42 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Heading, Spinner, Stack, Button } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import UserList from './UserList';
+import Link from 'next/link';
 
 const MainPage: React.FC = () => {
-    const { user, isAuthenticated, isLoading, token } = useAuth();
-    const [users, setUsers] = useState<any[]>([]);
-    const [isFetching, setIsFetching] = useState<boolean>(true);
+    const { user, isAuthenticated, isLoading } = useAuth();
 
-    useEffect(() => {
-        if (isAuthenticated && user) {
-            if (user.role === 'admin') {
-                // Fetch all users for admin
-                const fetchUsers = async () => {
-                    try {
-                        const response = await axios.get('/next-api/users', { // Updated route
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        });
-                        setUsers(response.data);
-                    } catch (error) {
-                        console.error('Failed to fetch users', error);
-                    } finally {
-                        setIsFetching(false);
-                    }
-                };
-                fetchUsers();
-            } else {
-                // No action needed for non-admin users
-                setIsFetching(false);
-            }
-        } else {
-            setIsFetching(false);
-        }
-    }, [isAuthenticated, user, token]);
 
-    if (isLoading || isFetching) {
+    if (isLoading) {
         return <Spinner />;
     }
 
@@ -46,7 +18,6 @@ const MainPage: React.FC = () => {
         return (
             <Box textAlign="center" mt={10}>
                 <Heading as="h2" mb={4}>Please log in</Heading>
-                {/* This can be a button or a link to login */}
             </Box>
         );
     }
@@ -66,21 +37,10 @@ const MainPage: React.FC = () => {
             ) : user && user.role === 'admin' ? (
                 <Box>
                     <Heading as="h2" mb={4}>All Users</Heading>
-                    <Button mb={4} colorScheme="teal">Create User</Button>
-                    {users.length ? (
-                        <Stack spacing={4}>
-                            {users.map((u) => (
-                                <Box key={u.id} p={4} borderWidth={1} borderRadius="md">
-                                    <p><strong>Name:</strong> {u.firstName} {u.lastName}</p>
-                                    <p><strong>Email:</strong> {u.email}</p>
-                                    <Button colorScheme="teal" mr={2}>Update</Button>
-                                    <Button colorScheme="red">Delete</Button>
-                                </Box>
-                            ))}
-                        </Stack>
-                    ) : (
-                        <p>No users found</p>
-                    )}
+                    <Link href="/createUser" passHref>
+                        <Button mb={4} colorScheme="teal">Create User</Button>
+                    </Link>
+                    <UserList />
                 </Box>
             ) : null}
         </Box>

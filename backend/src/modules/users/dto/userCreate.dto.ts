@@ -1,20 +1,31 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
-import { RegisterDto } from 'src/modules/auth/dto/register.dto';
+import { IsEmail, IsNotEmpty, IsString, Matches, IsIn, IsBoolean } from 'class-validator';
 
-export class UserCreateDto extends RegisterDto {
-  @IsOptional()
-  @ApiProperty({
-    description: 'Indicates whether the user’s email is verified',
-    default: false,
-    example: true,
+export class UserCreateDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
+    message:
+      'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
   })
-  @IsOptional()
-  verified?: boolean;
-  @ApiProperty({
-    description: 'The role of the user',
-    default: 'user',
-    example: 'admin',
-  })
-  role?: string;
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsIn(['user', 'admin'])
+  role: 'user' | 'admin';
+
+  @IsNotEmpty()
+  @IsBoolean()
+  verified?: boolean = false;
 }

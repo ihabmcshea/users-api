@@ -17,7 +17,9 @@
     "framer-motion": "^11.3.28",
     "next": "14.2.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "^7.52.2",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@types/node": "^20",

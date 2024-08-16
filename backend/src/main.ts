@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { HttpException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -8,6 +8,7 @@ import cors from 'cors';
 import { SwaggerConfig } from './configs/config.interface';
 import { GLOBAL_CONFIG } from './configs/global.config';
 import { AppModule } from './modules/app/app.module';
+import { HttpExceptionFilter } from './modules/filter/HttpException.filter';
 import { PrismaClientExceptionFilter } from './modules/filter/prismaclientexceptionfilter/prismaClientException.filter';
 import { API_PREFIX } from './shared/constants/global.constants';
 
@@ -21,6 +22,7 @@ async function bootstrap() {
 
   // Apply global exception filter
   app.useGlobalFilters(new PrismaClientExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Configure CORS
   app.use(

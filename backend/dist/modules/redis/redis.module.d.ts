@@ -1,1 +1,2 @@
-export declare class RedisModule {}
+export declare class RedisModule {
+}
