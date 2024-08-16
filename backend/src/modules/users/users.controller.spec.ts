@@ -14,7 +14,6 @@ describe('UsersService', () => {
   let service: UsersService;
   let prismaService: PrismaService;
 
-  // Mock user data
   const mockUser = {
     id: 1,
     email: 'test@example.com',
@@ -34,13 +33,17 @@ describe('UsersService', () => {
     delete: jest.fn(),
   };
 
-  // Mock PrismaService methods
   const mockPrismaService = {
     user: {
-      create: jest.fn().mockResolvedValue(mockUser),
+      create: jest.fn(),
       findMany: jest.fn().mockResolvedValue([mockUser]),
       count: jest.fn().mockResolvedValue(1),
-      findUnique: jest.fn().mockResolvedValue(mockUser),
+      findUnique: jest.fn().mockImplementation(({ where }) => {
+        if (where.email === mockUser.email) {
+          return mockUser;
+        }
+        return null;
+      }),
       update: jest.fn().mockResolvedValue(mockUser),
       delete: jest.fn().mockResolvedValue(mockUser),
     },
@@ -68,9 +71,9 @@ describe('UsersService', () => {
   });
 
   describe('createUser', () => {
-    it('should create a user', async () => {
+    it('should create a user with a unique email', async () => {
       const createUserDto: UserCreateDto = {
-        email: 'test@example.com',
+        email: 'unique@example.com', // Ensure this email is unique for each test run
         firstName: 'John',
         lastName: 'Doe',
         password: 'password',
@@ -78,16 +81,34 @@ describe('UsersService', () => {
         verified: false,
       };
 
+      (prismaService.user.create as jest.Mock).mockResolvedValue(mockUser);
+
       const result = await service.createUser(createUserDto);
       expect(result).toEqual(new UserDto(mockUser));
       expect(prismaService.user.create).toHaveBeenCalledWith({ data: createUserDto });
+    });
+
+    it('should throw a BadRequestException if email already exists', async () => {
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser); // Simulate existing email
+
+      const createUserDto: UserCreateDto = {
+        email: 'test@example.com', // Email that already exists
+        firstName: 'John',
+        lastName: 'Doe',
+        password: 'password',
+        role: 'user',
+        verified: false,
+      };
+
+      await expect(service.createUser(createUserDto)).rejects.toThrow(BadRequestException);
+      expect(prismaService.user.create).not.toHaveBeenCalled(); // Ensure create was not called
     });
 
     it('should throw an error if user creation fails', async () => {
       jest.spyOn(prismaService.user, 'create').mockRejectedValue(new Error('Error'));
 
       const createUserDto: UserCreateDto = {
-        email: 'test@example.com',
+        email: 'unique@example.com',
         firstName: 'John',
         lastName: 'Doe',
         password: 'password',
@@ -126,7 +147,6 @@ describe('UsersService', () => {
       const updateUserDto: UpdateUserDto = { firstName: 'Jane' };
       const updatedUser = { ...mockUser, firstName: 'Jane' };
 
-      // Mock PrismaService methods
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
       jest.spyOn(prismaService.user, 'update').mockResolvedValue(updatedUser);
 
@@ -148,22 +168,18 @@ describe('UsersService', () => {
 
   describe('deleteUser', () => {
     it('should delete a user', async () => {
-      // Mock findUnique to return the user that we are going to delete
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
 
-      // Mock delete method to return the deleted user
       const deletedUser = { ...mockUser, id: 1 };
       jest.spyOn(prismaService.user, 'delete').mockResolvedValue(deletedUser);
 
       const result = await service.deleteUser(1);
 
-      // Expect the result to be the user DTO
       expect(result).toEqual(new UserDto(deletedUser));
       expect(prismaService.user.delete).toHaveBeenCalledWith({ where: { id: 1 } });
     });
 
     it('should throw a NotFoundException if user is not found', async () => {
-      // Mock findUnique to return null
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
 
       await expect(service.deleteUser(999)).rejects.toThrow(NotFoundException);

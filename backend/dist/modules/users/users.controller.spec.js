@@ -29,10 +29,15 @@ describe('UsersService', () => {
     };
     const mockPrismaService = {
         user: {
-            create: jest.fn().mockResolvedValue(mockUser),
+            create: jest.fn(),
             findMany: jest.fn().mockResolvedValue([mockUser]),
             count: jest.fn().mockResolvedValue(1),
-            findUnique: jest.fn().mockResolvedValue(mockUser),
+            findUnique: jest.fn().mockImplementation(({ where }) => {
+                if (where.email === mockUser.email) {
+                    return mockUser;
+                }
+                return null;
+            }),
             update: jest.fn().mockResolvedValue(mockUser),
             delete: jest.fn().mockResolvedValue(mockUser),
         },
@@ -55,7 +60,22 @@ describe('UsersService', () => {
         expect(service).toBeDefined();
     });
     describe('createUser', () => {
-        it('should create a user', async () => {
+        it('should create a user with a unique email', async () => {
+            const createUserDto = {
+                email: 'unique@example.com',
+                firstName: 'John',
+                lastName: 'Doe',
+                password: 'password',
+                role: 'user',
+                verified: false,
+            };
+            prismaService.user.create.mockResolvedValue(mockUser);
+            const result = await service.createUser(createUserDto);
+            expect(result).toEqual(new user_dto_1.UserDto(mockUser));
+            expect(prismaService.user.create).toHaveBeenCalledWith({ data: createUserDto });
+        });
+        it('should throw a BadRequestException if email already exists', async () => {
+            jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(mockUser);
             const createUserDto = {
                 email: 'test@example.com',
                 firstName: 'John',
@@ -64,14 +84,13 @@ describe('UsersService', () => {
                 role: 'user',
                 verified: false,
             };
-            const result = await service.createUser(createUserDto);
-            expect(result).toEqual(new user_dto_1.UserDto(mockUser));
-            expect(prismaService.user.create).toHaveBeenCalledWith({ data: createUserDto });
+            await expect(service.createUser(createUserDto)).rejects.toThrow(common_1.BadRequestException);
+            expect(prismaService.user.create).not.toHaveBeenCalled();
         });
         it('should throw an error if user creation fails', async () => {
             jest.spyOn(prismaService.user, 'create').mockRejectedValue(new Error('Error'));
             const createUserDto = {
-                email: 'test@example.com',
+                email: 'unique@example.com',
                 firstName: 'John',
                 lastName: 'Doe',
                 password: 'password',
